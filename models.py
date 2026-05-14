@@ -8,7 +8,7 @@ db = create_engine("sqlite:///database/granforno.db")
 Base = declarative_base()
 
 # Usuário
-class Usuário(Base):
+class Usuario(Base):
     __tablename__ = 'usuarios' # Nome da tabela no database
 
     id = Column("id", Integer, primary_key=True, autoincrement=True)
@@ -54,22 +54,22 @@ class Pedido(Base):
         self.status = status
         self.preco = preco
 
+class Sabores(Base):
+    __table_name__ = 'sabores'
+
+    id = Column("id", Integer, primary_key=True, autoincrement=True)
+    nome_sabor = Column("nome_sabor", String, nullable=False)
+    descricao_sabor = Column("descricao_sabor", String)
+    alerta_alergenicos = Column("alerta_alergenicos", String, default="SEM ALERGÊNCOS")
+
+    def __init__(self, nome_sabor, descricao_sabor, alerta_alergenicos="SEM ALERGÊNICOS"):
+        self.nome_sabor = nome_sabor
+        self.descricao_sabor = descricao_sabor
+        self.alerta_alergenicos = alerta_alergenicos
+        
 # ItensPedido
 class ItensPedido(Base):
     __table_name__ = 'ItensPedido'
-
-    SABOR_ITENS = (
-        ("CALABRESA", "CALABRESA"),
-        ("MUSSARELA", "MUSSARELA"),
-        ("FRANGO COM CATUPIRY", "FRANGO COM CATUPIRY"),
-        ("PORTUGUESA", "PORTUGUESA"),
-        ("QUATRO QUEIJOS", "QUATRO QUEIJOS"),
-        ("MARGUERITA", "MARGUERITA"),
-        ("PEPPERONI", "PEPPERONI"),
-        ("CARNE DE SOL", "CARNE DE SOL")
-        ("CHOCOLATE", "CHOCOLATE")
-        ("SORVETE", "SORVETE")
-    )
 
     TAMANHO_ITENS = (
         ("INDIVIDUAL", "INDIVIDUAL"),
@@ -89,7 +89,7 @@ class ItensPedido(Base):
 
     id = Column("id", Integer, primary_key=True, autoincrement=True)
     quantidade = Column("quantidade", Integer, nullable=False, default=0)
-    sabor = Column("sabor", ChoiceType(choices=SABOR_ITENS), nullable=False)
+    sabor = Column("sabor", ForeignKey("sabor.id"), nullable=False)
     tamanho = Column("tamanho", ChoiceType(choices=TAMANHO_ITENS), nullable=False)
     tipo_borda = Column("tipo_borda", ChoiceType(choices=BORDA_ITENS), default="VAZIO")
     preco_unitario = Column("preco_unitario", Float, nullable=False)
@@ -102,6 +102,7 @@ class ItensPedido(Base):
         self.preco_unitario = preco_unitario
         self.id_pedido = id_pedido
         self.tipo_borda = tipo_borda
+
 
 # TODO: Criar metadados do database (criar efetivamente o database)
 
